@@ -16,7 +16,7 @@ class GoogleGeocoding implements Geocoding {
   final HttpClient _httpClient;
 
   GoogleGeocoding(this.apiKey) :
-    _httpClient = new HttpClient(),
+    _httpClient = HttpClient(),
     assert(apiKey != null, "apiKey must not be null");
 
   Future<List<Address>> findAddressesFromCoordinates(Coordinates coordinates) async  {
@@ -37,19 +37,19 @@ class GoogleGeocoding implements Geocoding {
     final response = await request.close();
     final responseBody = await response.transform(utf8.decoder).join();
     print("Received $responseBody...");
-    Map data = jsonDecode(responseBody);
+    var data = jsonDecode(responseBody);
 
-    List<Map> results = data["results"];
+    var results = data["results"];
 
     if(results == null)
       return null;
 
     return results.map(_convertAddress)
-                  .map((map) => new Address.fromMap(map))
+                  .map<Address>((map) => Address.fromMap(map))
                   .toList();
   }
 
-  Map _convertCoordinates(Map geometry) {
+  Map _convertCoordinates(dynamic geometry) {
     if(geometry == null)
       return null;
 
@@ -63,14 +63,14 @@ class GoogleGeocoding implements Geocoding {
     };
   }
 
-  Map _convertAddress(Map data) {
+  Map _convertAddress(dynamic data) {
 
-    Map result = new Map();
+    Map result = Map();
 
     result["coordinates"] = _convertCoordinates(data["geometry"]);
     result["addressLine"] = data["formatted_address"];
 
-    List<Map> addressComponents = data["address_components"];
+    var addressComponents = data["address_components"];
 
     addressComponents.forEach((item) {
 

@@ -5,6 +5,6 @@ import 'package:geocoder/services/local.dart';
 export 'model.dart';
 
 class Geocoder {
-  static final Geocoding local = new LocalGeocoding();
-  static Geocoding google(String apiKey) => new GoogleGeocoding(apiKey);
+  static final Geocoding local = LocalGeocoding();
+  static Geocoding google(String apiKey) => GoogleGeocoding(apiKey);
 }
