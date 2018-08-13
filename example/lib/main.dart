@@ -181,7 +181,7 @@ class _MyAppState extends State<MyApp> {
 
   final Map<String, Geocoding> modes = {
     "Local" : Geocoder.local,
-    "Google (distant)" : Geocoder.google("AIzaSyBa7VDCPLDtvm_XkkY69FpEuuRWo-3NYq8"),
+    "Google (distant)" : Geocoder.google("<API-KEY>"),
   };
 
   void _changeMode(Geocoding mode) {
