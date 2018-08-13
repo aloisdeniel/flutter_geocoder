@@ -1,8 +1,11 @@
 name: geocoder
 description: Forward and reverse geocoding.
-version: 0.0.1
+version: 0.1.0
 author: Aloïs Deniel<alois.deniel@gmail.com>
 homepage: https://github.com/aloisdeniel/flutter_geocoder
+
+environment:
+    sdk: ">=2.0.0-dev.40.0.flutter-f981f09760 <3.0.0"
 
 dependencies:
   flutter:
