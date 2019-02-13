@@ -163,6 +163,7 @@ public class GeocoderPlugin implements MethodCallHandler {
     result.put("adminArea", address.getAdminArea());
     result.put("subAdminArea", address.getSubAdminArea());
     result.put("addressLine", sb.toString());
+    result.put("postalCode", address.getPostalCode());
 
     return result;
   }
