@@ -31,12 +31,12 @@ class GoogleGeocoding implements Geocoding {
   }
 
   Future<List<Address>> _send(String url) async {
-    print("Sending $url...");
+    //print("Sending $url...");
     final uri = Uri.parse(url);
     final request = await this._httpClient.getUrl(uri);
     final response = await request.close();
     final responseBody = await response.transform(utf8.decoder).join();
-    print("Received $responseBody...");
+    //print("Received $responseBody...");
     var data = jsonDecode(responseBody);
 
     var results = data["results"];
