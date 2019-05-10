@@ -76,6 +76,9 @@ public class GeocoderPlugin implements MethodCallHandler {
         try {
           plugin.assertPresent();
           List<Address> addresses = geocoder.getFromLocationName(address, 20);
+	      if (addresses.size() == 0) {
+	        throw new NotAvailableException();
+	      }
           result.success(createAddressMapList(addresses));
         }
         catch(IOException ex) {
@@ -106,6 +109,9 @@ public class GeocoderPlugin implements MethodCallHandler {
         try {
           plugin.assertPresent();
           List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 20);
+	      if (addresses.size() == 0) {
+  		    throw new NotAvailableException();
+	      }
           result.success(createAddressMapList(addresses));
         } catch (IOException ex) {
           result.error("failed", ex.toString(), null);
