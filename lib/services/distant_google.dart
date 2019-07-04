@@ -35,7 +35,7 @@ class GoogleGeocoding implements Geocoding {
     final uri = Uri.parse(url);
     final request = await this._httpClient.getUrl(uri);
     final response = await request.close();
-    final responseBody = await response.transform(utf8.decoder).join();
+    final responseBody = await utf8.decoder.bind(response).join();
     print("Received $responseBody...");
     var data = jsonDecode(responseBody);
 
