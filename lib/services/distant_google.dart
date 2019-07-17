@@ -12,15 +12,16 @@ class GoogleGeocoding implements Geocoding {
   static const _host = 'https://maps.google.com/maps/api/geocode/json';
 
   final String apiKey;
+  final String language;
 
   final HttpClient _httpClient;
 
-  GoogleGeocoding(this.apiKey) :
+  GoogleGeocoding(this.apiKey, { this.language }) :
     _httpClient = HttpClient(),
     assert(apiKey != null, "apiKey must not be null");
 
   Future<List<Address>> findAddressesFromCoordinates(Coordinates coordinates) async  {
-    final url = '$_host?key=$apiKey&latlng=${coordinates.latitude},${coordinates.longitude}';
+    final url = '$_host?key=$apiKey${language != null ? '&language='+language : ''}&latlng=${coordinates.latitude},${coordinates.longitude}';
     return _send(url);
   }
 
@@ -31,12 +32,12 @@ class GoogleGeocoding implements Geocoding {
   }
 
   Future<List<Address>> _send(String url) async {
-    print("Sending $url...");
+    //print("Sending $url...");
     final uri = Uri.parse(url);
     final request = await this._httpClient.getUrl(uri);
     final response = await request.close();
     final responseBody = await response.transform(utf8.decoder).join();
-    print("Received $responseBody...");
+    //print("Received $responseBody...");
     var data = jsonDecode(responseBody);
 
     var results = data["results"];
