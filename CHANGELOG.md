@@ -1,3 +1,9 @@
-## [0.0.1] - TODO: Add release date.
+## [0.2.0] - Migration to AndroidX and fixes
 
-* TODO: Describe initial release.
+* Fixed multi-threading issues
+* Added language support to Google geocoder
+* Support for AndroidX
+
+## [0.1.0] - Initial
+
+* Initial version
