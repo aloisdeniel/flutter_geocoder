@@ -10,6 +10,8 @@ import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -44,8 +46,55 @@ public class GeocoderPlugin implements MethodCallHandler {
     channel.setMethodCallHandler(new GeocoderPlugin(registrar.context()));
   }
 
+  // MethodChannel.Result wrapper that responds on the platform thread.
+  private static class MethodResultWrapper implements Result {
+    private Result methodResult;
+    private Handler handler;
+
+    MethodResultWrapper(Result result) {
+      methodResult = result;
+      handler = new Handler(Looper.getMainLooper());
+    }
+
+    @Override
+    public void success(final Object result) {
+      handler.post(
+          new Runnable() {
+            @Override
+            public void run() {
+              methodResult.success(result);
+            }
+          });
+    }
+
+    @Override
+    public void error(
+        final String errorCode, final String errorMessage, final Object errorDetails) {
+      handler.post(
+          new Runnable() {
+            @Override
+            public void run() {
+              methodResult.error(errorCode, errorMessage, errorDetails);
+            }
+          });
+    }
+
+    @Override
+    public void notImplemented() {
+      handler.post(
+          new Runnable() {
+            @Override
+            public void run() {
+              methodResult.notImplemented();
+            }
+          });
+    }
+  }
+
   @Override
-  public void onMethodCall(MethodCall call, Result result) {
+  public void onMethodCall(MethodCall call, Result rawResult) {
+    Result result = new MethodResultWrapper(rawResult);
+
     if (call.method.equals("findAddressesFromQuery")) {
       String address = (String) call.argument("address");
       findAddressesFromQuery(address, result);
