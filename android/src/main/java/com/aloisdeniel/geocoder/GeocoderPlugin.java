@@ -65,33 +65,33 @@ public class GeocoderPlugin implements MethodCallHandler {
     }
   }
 
+  @SuppressLint("StaticFieldLeak")
   private void findAddressesFromQuery(final String address, final Result result) {
 
     final GeocoderPlugin plugin = this;
-    new AsyncTask<Void, Void, Void>()
-    {
-      @Override
-      protected Void doInBackground(Void... params)
-      {
-        try {
-          plugin.assertPresent();
-          List<Address> addresses = geocoder.getFromLocationName(address, 20);
-          result.success(createAddressMapList(addresses));
+    new AsyncTask<Void, Void, List<Address>>() {
+        @Override
+        protected List<Address> doInBackground(Void... params) {
+            try {
+                plugin.assertPresent();
+                return geocoder.getFromLocation(latitude, longitude, 20);
+            } catch (IOException ex) {
+                return null;
+            } catch (NotAvailableException ex) {
+                return new ArrayList<>();
+            }
         }
-        catch(IOException ex) {
-          result.error("failed", ex.toString(), null);
-        }
-        catch(NotAvailableException ex) {
-          result.error("not_available", ex.toString(), null);
-        }
-        return null;
-      }
 
-      @Override
-      protected void onPostExecute(Void result)
-      {
-        super.onPostExecute(result);
-      }
+        @Override
+        protected void onPostExecute(List<Address> addresses) {
+            if (addresses != null) {
+                if (addresses.isEmpty())
+                    result.error("not_available", "Empty", null);
+
+                else result.success(createAddressMapList(addresses));
+            }
+            else result.error("failed", "Failed", null);
+        }
     }.execute();
   }
 

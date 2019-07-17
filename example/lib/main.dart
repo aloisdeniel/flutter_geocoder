@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:geocoder/services/base.dart';
-import 'package:geocoder_example/widgets.dart';
+import 'widgets.dart';
 
 void main() => runApp(new MyApp());
 
