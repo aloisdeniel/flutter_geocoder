@@ -2,6 +2,7 @@ package com.aloisdeniel.geocoder;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Map;
 import java.util.HashMap;
 import java.io.IOException;
@@ -31,11 +32,11 @@ class NotAvailableException extends Exception {
  */
 public class GeocoderPlugin implements MethodCallHandler {
 
-  private Geocoder geocoder;
+  private Context context;
 
   public GeocoderPlugin(Context context) {
 
-    this.geocoder = new Geocoder(context);
+    this.context = context;
   }
 
   /**
@@ -102,26 +103,27 @@ public class GeocoderPlugin implements MethodCallHandler {
     else if (call.method.equals("findAddressesFromCoordinates")) {
       float latitude = ((Number) call.argument("latitude")).floatValue();
       float longitude = ((Number) call.argument("longitude")).floatValue();
-      findAddressesFromCoordinates(latitude,longitude, result);
+      String language = ((String) call.argument("language"));
+      findAddressesFromCoordinates(latitude, longitude, language, result);
     } else {
       result.notImplemented();
     }
   }
 
-  private void assertPresent() throws NotAvailableException {
+  private void assertPresent(Geocoder geocoder) throws NotAvailableException {
     if (!geocoder.isPresent()) {
       throw new NotAvailableException();
     }
   }
 
   private void findAddressesFromQuery(final String address, final Result result) {
-
     final GeocoderPlugin plugin = this;
+    final Geocoder geocoder = new Geocoder(context);
     new AsyncTask<Void, Void, List<Address>>() {
         @Override
         protected List<Address> doInBackground(Void... params) {
             try {
-                plugin.assertPresent();
+                plugin.assertPresent(geocoder);
                 return geocoder.getFromLocationName(address, 20);
             } catch (IOException ex) {
                 return null;
@@ -143,13 +145,14 @@ public class GeocoderPlugin implements MethodCallHandler {
     }.execute();
   }
 
-  private void findAddressesFromCoordinates(final float latitude, final float longitude, final Result result) {
+  private void findAddressesFromCoordinates(final float latitude, final float longitude, final String language, final Result result) {
     final GeocoderPlugin plugin = this;
+    final Geocoder geocoder = language == null ? new Geocoder(context) : new Geocoder(context, new Locale(language));
     new AsyncTask<Void, Void, List<Address>>() {
         @Override
         protected List<Address> doInBackground(Void... params) {
             try {
-                plugin.assertPresent();
+                plugin.assertPresent(geocoder);
                 return geocoder.getFromLocation(latitude, longitude, 20);
             } catch (IOException ex) {
                 return null;

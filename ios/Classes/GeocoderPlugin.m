@@ -27,14 +27,25 @@
   if ([@"findAddressesFromCoordinates" isEqualToString:call.method]) {
       NSNumber *longitude = call.arguments[@"longitude"];
       NSNumber *latitude = call.arguments[@"latitude"];
+      NSString *language = call.arguments[@"language"];
       CLLocation * location = [[CLLocation alloc] initWithLatitude:latitude.doubleValue longitude:longitude.doubleValue];
       [self initializeGeocoder];
-      [self.geocoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
-          if (error) {
-              return result(error.flutterError);
-          }
-          result([self placemarksToDictionary:placemarks]);
-      }];
+      if (language != (id)[NSNull null] && @available(iOS 11.0, *)) {
+          NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:language];
+          [self.geocoder reverseGeocodeLocation:location preferredLocale:locale completionHandler:^(NSArray *placemarks, NSError *error) {
+              if (error) {
+                  return result(error.flutterError);
+              }
+              result([self placemarksToDictionary:placemarks]);
+          }];
+      } else {
+          [self.geocoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
+              if (error) {
+                  return result(error.flutterError);
+              }
+              result([self placemarksToDictionary:placemarks]);
+          }];
+      }
   }
   else if ([@"findAddressesFromQuery" isEqualToString:call.method]) {
       NSString *address = call.arguments[@"address"];
