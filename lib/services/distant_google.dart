@@ -64,11 +64,42 @@ class GoogleGeocoding implements Geocoding {
     };
   }
 
+  List<Map> _convertViewport(dynamic geometry) {
+    if (geometry == null)
+      return null;
+
+    var location = geometry["location"];
+    if (location == null)
+      return null;
+
+    var viewport = geometry["viewport"];
+    if (viewport == null)
+      return null;
+
+    var northeast = viewport["northeast"];
+    var southwest = viewport["southwest"];
+
+    if (northeast == null || southwest == null )
+      return null;
+
+    return [
+      {
+        "latitude": northeast["lat"],
+        "longitude": northeast["lng"],
+      },
+      {
+        "latitude": southwest["lat"],
+        "longitude": southwest["lng"],
+      },
+    ];
+  }
+
   Map _convertAddress(dynamic data) {
 
     Map result = Map();
 
     result["coordinates"] = _convertCoordinates(data["geometry"]);
+    result["viewport"] = _convertViewport(data["geometry"]);
     result["addressLine"] = data["formatted_address"];
 
     var addressComponents = data["address_components"];

@@ -30,6 +30,8 @@ class Address {
   /// The geographic coordinates.
   final Coordinates coordinates;
 
+  final List<Coordinates> viewport;
+
   /// The formatted address with all lines.
   final String addressLine;
 
@@ -63,7 +65,20 @@ class Address {
   /// The sub-thoroughfare name of the address
   final String subThoroughfare;
 
-  Address({this.coordinates, this.addressLine, this.countryName, this.countryCode, this.featureName, this.postalCode, this.adminArea, this.subAdminArea, this.locality, this.subLocality, this.thoroughfare, this.subThoroughfare});
+  Address(
+    {this.coordinates,
+    this.viewport,
+    this.addressLine,
+    this.countryName,
+    this.countryCode,
+    this.featureName,
+    this.postalCode,
+    this.adminArea,
+    this.subAdminArea,
+    this.locality,
+    this.subLocality,
+    this.thoroughfare,
+    this.subThoroughfare});
 
   /// Creates an address from a map containing its properties.
   Address.fromMap(Map map) :
@@ -78,7 +93,11 @@ class Address {
         this.adminArea = map["adminArea"],
         this.subAdminArea = map["subAdminArea"],
         this.thoroughfare = map["thoroughfare"],
-        this.subThoroughfare = map["subThoroughfare"];
+        this.subThoroughfare = map["subThoroughfare"],
+        this.viewport = map["viewport"]
+          .toList()
+          .map<Coordinates>((coordinates) => Coordinates.fromMap(coordinates))
+          .toList();
 
   /// Creates a map from the address properties.
   Map toMap() => {
