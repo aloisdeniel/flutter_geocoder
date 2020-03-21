@@ -79,7 +79,7 @@ class GoogleGeocoding implements Geocoding {
     var northeast = viewport["northeast"];
     var southwest = viewport["southwest"];
 
-    if (northeast == null || southwest == null )
+    if (northeast == null || southwest == null)
       return null;
 
     return [
