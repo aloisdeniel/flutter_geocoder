@@ -27,7 +27,7 @@ class GoogleGeocoding implements Geocoding {
 
   Future<List<Address>> findAddressesFromQuery(String address) async {
     var encoded = Uri.encodeComponent(address);
-    final url = '$_host?key=$apiKey&address=$encoded';
+    final url = '$_host?key=$apiKey${language != null ? '&language='+language : ''}&address=$encoded';
     return _send(url);
   }
 
