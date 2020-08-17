@@ -57,7 +57,8 @@ class _GeocodeViewState extends State<GeocodeView> {
 
     try{
       var geocoding = AppState.of(context).mode;
-      var results = await geocoding.findAddressesFromQuery(_controller.text);
+      // Testing with hebrew language (code: "iw")
+      var results = await geocoding.findAddressesFromQuery(_controller.text, language: 'iw');
       this.setState(() {
         this.results = results;
       });
