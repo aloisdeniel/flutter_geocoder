@@ -1,3 +1,9 @@
+## [0.2.2] - Fixed PlatformException
+
+* Fixed PlatformException https://github.com/aloisdeniel/flutter_geocoder/issues/29
+* Format code.
+* Update deps.
+
 ## [0.2.1] - Fixed issues with Uint8List
 
 * Fixed breaking changes in newer SDK versions.
