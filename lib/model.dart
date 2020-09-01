@@ -2,7 +2,6 @@ import 'package:meta/meta.dart';
 
 @immutable
 class Coordinates {
-
   /// The geographic coordinate that specifies the north–south position of a point on the Earth's surface.
   final double latitude;
 
@@ -12,15 +11,15 @@ class Coordinates {
   Coordinates(this.latitude, this.longitude);
 
   /// Creates coordinates from a map containing its properties.
-  Coordinates.fromMap(Map map) :
-        this.latitude = map["latitude"],
+  Coordinates.fromMap(Map map)
+      : this.latitude = map["latitude"],
         this.longitude = map["longitude"];
 
   /// Creates a map from the coordinates properties.
   Map toMap() => {
-    "latitude": this.latitude,
-    "longitude": this.longitude,
-  };
+        "latitude": this.latitude,
+        "longitude": this.longitude,
+      };
 
   String toString() => "{$latitude,$longitude}";
 }
@@ -63,11 +62,23 @@ class Address {
   /// The sub-thoroughfare name of the address
   final String subThoroughfare;
 
-  Address({this.coordinates, this.addressLine, this.countryName, this.countryCode, this.featureName, this.postalCode, this.adminArea, this.subAdminArea, this.locality, this.subLocality, this.thoroughfare, this.subThoroughfare});
+  Address(
+      {this.coordinates,
+      this.addressLine,
+      this.countryName,
+      this.countryCode,
+      this.featureName,
+      this.postalCode,
+      this.adminArea,
+      this.subAdminArea,
+      this.locality,
+      this.subLocality,
+      this.thoroughfare,
+      this.subThoroughfare});
 
   /// Creates an address from a map containing its properties.
-  Address.fromMap(Map map) :
-        this.coordinates = new Coordinates.fromMap(map["coordinates"]),
+  Address.fromMap(Map map)
+      : this.coordinates = new Coordinates.fromMap(map["coordinates"]),
         this.addressLine = map["addressLine"],
         this.countryName = map["countryName"],
         this.countryCode = map["countryCode"],
@@ -82,17 +93,17 @@ class Address {
 
   /// Creates a map from the address properties.
   Map toMap() => {
-    "coordinates": this.coordinates.toMap(),
-    "addressLine": this.addressLine,
-    "countryName": this.countryName,
-    "countryCode": this.countryCode,
-    "featureName": this.featureName,
-    "postalCode": this.postalCode,
-    "locality": this.locality,
-    "subLocality": this.subLocality,
-    "adminArea": this.adminArea,
-    "subAdminArea": this.subAdminArea,
-    "thoroughfare": this.thoroughfare,
-    "subThoroughfare": this.subThoroughfare,
-  };
+        "coordinates": this.coordinates.toMap(),
+        "addressLine": this.addressLine,
+        "countryName": this.countryName,
+        "countryCode": this.countryCode,
+        "featureName": this.featureName,
+        "postalCode": this.postalCode,
+        "locality": this.locality,
+        "subLocality": this.subLocality,
+        "adminArea": this.adminArea,
+        "subAdminArea": this.subAdminArea,
+        "thoroughfare": this.thoroughfare,
+        "subThoroughfare": this.subThoroughfare,
+      };
 }

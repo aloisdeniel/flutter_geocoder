@@ -17,7 +17,7 @@ class AppState extends InheritedWidget {
     Key key,
     this.mode,
     Widget child,
-  }) : assert(mode != null),
+  })  : assert(mode != null),
         assert(child != null),
         super(key: key, child: child);
 
@@ -32,7 +32,6 @@ class AppState extends InheritedWidget {
 }
 
 class GeocodeView extends StatefulWidget {
-
   GeocodeView();
 
   @override
@@ -40,7 +39,6 @@ class GeocodeView extends StatefulWidget {
 }
 
 class _GeocodeViewState extends State<GeocodeView> {
-
   _GeocodeViewState();
 
   final TextEditingController _controller = new TextEditingController();
@@ -50,22 +48,19 @@ class _GeocodeViewState extends State<GeocodeView> {
   bool isLoading = false;
 
   Future search() async {
-
     this.setState(() {
       this.isLoading = true;
     });
 
-    try{
+    try {
       var geocoding = AppState.of(context).mode;
       var results = await geocoding.findAddressesFromQuery(_controller.text);
       this.setState(() {
         this.results = results;
       });
-    }
-    catch(e) {
-      print("Error occured: $e");
-    }
-    finally {
+    } catch (e) {
+      print("Error occurred: $e");
+    } finally {
       this.setState(() {
         this.isLoading = false;
       });
@@ -75,30 +70,32 @@ class _GeocodeViewState extends State<GeocodeView> {
   @override
   Widget build(BuildContext context) {
     return new Column(
-        children: <Widget>[
-          new Card(
-            child: new Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: new Row(
-                children: <Widget>[
-                  new Expanded(
-                    child: new TextField(
-                      controller: _controller,
-                      decoration: new InputDecoration(hintText: "Enter an address"),
-                    ),
+      children: <Widget>[
+        new Card(
+          child: new Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: new Row(
+              children: <Widget>[
+                new Expanded(
+                  child: new TextField(
+                    controller: _controller,
+                    decoration:
+                        new InputDecoration(hintText: "Enter an address"),
                   ),
-                  new IconButton(icon: new Icon(Icons.search), onPressed: () => search())
-                ],
-              ),
+                ),
+                new IconButton(
+                    icon: new Icon(Icons.search), onPressed: () => search())
+              ],
             ),
           ),
-          new Expanded(child: new AddressListView(this.isLoading, this.results)),
-        ]);
+        ),
+        new Expanded(child: new AddressListView(this.isLoading, this.results)),
+      ],
+    );
   }
 }
 
 class ReverseGeocodeView extends StatefulWidget {
-
   ReverseGeocodeView();
 
   @override
@@ -106,8 +103,8 @@ class ReverseGeocodeView extends StatefulWidget {
 }
 
 class _ReverseGeocodeViewState extends State<ReverseGeocodeView> {
-
-  final TextEditingController _controllerLongitude = new TextEditingController();
+  final TextEditingController _controllerLongitude =
+      new TextEditingController();
   final TextEditingController _controllerLatitude = new TextEditingController();
 
   _ReverseGeocodeViewState();
@@ -117,25 +114,23 @@ class _ReverseGeocodeViewState extends State<ReverseGeocodeView> {
   bool isLoading = false;
 
   Future search() async {
-
-
     this.setState(() {
       this.isLoading = true;
     });
 
-    try{
+    try {
       var geocoding = AppState.of(context).mode;
       var longitude = double.parse(_controllerLongitude.text);
       var latitude = double.parse(_controllerLatitude.text);
-      var results = await geocoding.findAddressesFromCoordinates(new Coordinates(latitude, longitude));
+      var results = await geocoding.findAddressesFromCoordinates(
+        Coordinates(latitude, longitude),
+      );
       this.setState(() {
         this.results = results;
       });
-    }
-    catch(e) {
-      print("Error occured: $e");
-    }
-    finally {
+    } catch (e) {
+      print("Error occurred: ${e.toString()}");
+    } finally {
       this.setState(() {
         this.isLoading = false;
       });
@@ -145,43 +140,44 @@ class _ReverseGeocodeViewState extends State<ReverseGeocodeView> {
   @override
   Widget build(BuildContext context) {
     return new Column(
-        children: <Widget>[
-          new Card(
-            child: new Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: new Row(
-                children: <Widget>[
-                  new Expanded(
-                    child: new Column(
-                      children: <Widget>[
-                        new TextField(
-                          controller: _controllerLatitude,
-                          decoration: new InputDecoration(hintText: "Latitude"),
-                        ),
-                        new TextField(
-                          controller: _controllerLongitude,
-                          decoration: new InputDecoration(hintText: "Longitude"),
-                        ),
-                      ],
-                    ),
+      children: <Widget>[
+        new Card(
+          child: new Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: new Row(
+              children: <Widget>[
+                new Expanded(
+                  child: new Column(
+                    children: <Widget>[
+                      new TextField(
+                        controller: _controllerLatitude,
+                        decoration: new InputDecoration(hintText: "Latitude"),
+                      ),
+                      new TextField(
+                        controller: _controllerLongitude,
+                        decoration: new InputDecoration(hintText: "Longitude"),
+                      ),
+                    ],
                   ),
-                  new IconButton(icon: new Icon(Icons.search), onPressed: () => search())
-                ],
-              ),
+                ),
+                new IconButton(
+                    icon: new Icon(Icons.search), onPressed: () => search())
+              ],
             ),
           ),
-          new Expanded(child: new AddressListView(this.isLoading, this.results)),
-        ]);
+        ),
+        new Expanded(child: new AddressListView(this.isLoading, this.results)),
+      ],
+    );
   }
 }
 
 class _MyAppState extends State<MyApp> {
-
   Geocoding geocoding = Geocoder.local;
 
   final Map<String, Geocoding> modes = {
-    "Local" : Geocoder.local,
-    "Google (distant)" : Geocoder.google("<API-KEY>"),
+    "Local": Geocoder.local,
+    "Google (distant)": Geocoder.google("<API-KEY>"),
   };
 
   void _changeMode(Geocoding mode) {
@@ -201,37 +197,41 @@ class _MyAppState extends State<MyApp> {
             appBar: new AppBar(
               title: new Text('Geocoder'),
               actions: <Widget>[
-                new PopupMenuButton<Geocoding>( // overflow menu
+                new PopupMenuButton<Geocoding>(
+                  // overflow menu
                   onSelected: _changeMode,
                   itemBuilder: (BuildContext context) {
-                    return modes.keys.map((String mode) {
-                      return new CheckedPopupMenuItem<Geocoding>(
-                        checked: modes[mode] == this.geocoding,
-                        value: modes[mode],
-                        child: new Text(mode),
-                      );
-                    }).toList();
+                    return modes.keys.map(
+                      (String mode) {
+                        return new CheckedPopupMenuItem<Geocoding>(
+                          checked: modes[mode] == this.geocoding,
+                          value: modes[mode],
+                          child: new Text(mode),
+                        );
+                      },
+                    ).toList();
                   },
                 ),
               ],
               bottom: new TabBar(
-                tabs:  [
-                   new Tab(
+                tabs: [
+                  new Tab(
                     text: "Query",
                     icon: new Icon(Icons.search),
                   ),
-                   new Tab(
-                     text: "Coordinates",
-                     icon: new Icon(Icons.pin_drop),
-                   ),
+                  new Tab(
+                    text: "Coordinates",
+                    icon: new Icon(Icons.pin_drop),
+                  ),
                 ],
               ),
             ),
             body: new TabBarView(
-                children: <Widget>[
-                  new GeocodeView(),
-                  new ReverseGeocodeView(),
-                ]),
+              children: <Widget>[
+                new GeocodeView(),
+                new ReverseGeocodeView(),
+              ],
+            ),
           ),
         ),
       ),
