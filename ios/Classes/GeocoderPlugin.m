@@ -43,7 +43,7 @@
           if (error) {
               return result(error.flutterError);
           }
-          
+
           result([self placemarksToDictionary:placemarks]);
       }];
   } else {
@@ -55,14 +55,14 @@
     if (!self.geocoder) {
         self.geocoder = [[CLGeocoder alloc] init];
     }
-    
+
     if (self.geocoder.geocoding) {
         [self.geocoder cancelGeocode];
     }
 }
 
 - (NSArray *) placemarksToDictionary:(NSArray *)placemarks {
-    
+
     NSMutableArray *results = [[NSMutableArray alloc] init];
 
     if(!placemarks) {
@@ -73,7 +73,7 @@
         CLPlacemark* placemark = [placemarks objectAtIndex:i];
 
         NSArray *lines = placemark.addressDictionary[@"FormattedAddressLines"];
-        
+
         NSDictionary *coordinates = nil;
 
         if(placemark.location) {
@@ -97,7 +97,7 @@
                                  @"subAdminArea": placemark.subAdministrativeArea ?: [NSNull null],
                                  @"addressLine": [lines componentsJoinedByString:@", "] ?: [NSNull null]
         };
-        
+
         [results addObject:address];
 
 

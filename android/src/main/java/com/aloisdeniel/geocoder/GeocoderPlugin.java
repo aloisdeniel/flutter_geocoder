@@ -13,6 +13,8 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
@@ -29,21 +31,34 @@ class NotAvailableException extends Exception {
 /**
  * GeocoderPlugin
  */
-public class GeocoderPlugin implements MethodCallHandler {
+public class GeocoderPlugin implements MethodCallHandler, FlutterPlugin {
 
   private Geocoder geocoder;
-
-  public GeocoderPlugin(Context context) {
-
-    this.geocoder = new Geocoder(context);
-  }
+  private MethodChannel methodChannel;
 
   /**
    * Plugin registration.
    */
   public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "github.com/aloisdeniel/geocoder");
-    channel.setMethodCallHandler(new GeocoderPlugin(registrar.context()));
+    GeocoderPlugin instance = new GeocoderPlugin();
+    instance.onAttachedToEngine(registrar.context(), registrar.messenger());
+  }
+
+  @Override
+  public void onAttachedToEngine(FlutterPluginBinding binding) {
+    onAttachedToEngine(binding.getApplicationContext(), binding.getBinaryMessenger());
+  }
+
+  @Override
+  public void onDetachedFromEngine(FlutterPluginBinding binding) {
+    methodChannel.setMethodCallHandler(null);
+    methodChannel = null;
+  }
+
+  private void onAttachedToEngine(Context context, BinaryMessenger messenger) {
+    geocoder = new Geocoder(context);
+    methodChannel = new MethodChannel(messenger, "github.com/aloisdeniel/geocoder");
+    methodChannel.setMethodCallHandler(this);
   }
 
   // MethodChannel.Result wrapper that responds on the platform thread.
@@ -59,35 +74,35 @@ public class GeocoderPlugin implements MethodCallHandler {
     @Override
     public void success(final Object result) {
       handler.post(
-          new Runnable() {
-            @Override
-            public void run() {
-              methodResult.success(result);
-            }
-          });
+              new Runnable() {
+                @Override
+                public void run() {
+                  methodResult.success(result);
+                }
+              });
     }
 
     @Override
     public void error(
-        final String errorCode, final String errorMessage, final Object errorDetails) {
+            final String errorCode, final String errorMessage, final Object errorDetails) {
       handler.post(
-          new Runnable() {
-            @Override
-            public void run() {
-              methodResult.error(errorCode, errorMessage, errorDetails);
-            }
-          });
+              new Runnable() {
+                @Override
+                public void run() {
+                  methodResult.error(errorCode, errorMessage, errorDetails);
+                }
+              });
     }
 
     @Override
     public void notImplemented() {
       handler.post(
-          new Runnable() {
-            @Override
-            public void run() {
-              methodResult.notImplemented();
-            }
-          });
+              new Runnable() {
+                @Override
+                public void run() {
+                  methodResult.notImplemented();
+                }
+              });
     }
   }
 
@@ -118,56 +133,56 @@ public class GeocoderPlugin implements MethodCallHandler {
 
     final GeocoderPlugin plugin = this;
     new AsyncTask<Void, Void, List<Address>>() {
-        @Override
-        protected List<Address> doInBackground(Void... params) {
-            try {
-                plugin.assertPresent();
-                return geocoder.getFromLocationName(address, 20);
-            } catch (IOException ex) {
-                return null;
-            } catch (NotAvailableException ex) {
-                return new ArrayList<>();
-            }
+      @Override
+      protected List<Address> doInBackground(Void... params) {
+        try {
+          plugin.assertPresent();
+          return geocoder.getFromLocationName(address, 20);
+        } catch (IOException ex) {
+          return null;
+        } catch (NotAvailableException ex) {
+          return new ArrayList<>();
         }
+      }
 
-        @Override
-        protected void onPostExecute(List<Address> addresses) {
-            if (addresses != null) {
-                if (addresses.isEmpty())
-                    result.error("not_available", "Empty", null);
+      @Override
+      protected void onPostExecute(List<Address> addresses) {
+        if (addresses != null) {
+          if (addresses.isEmpty())
+            result.error("not_available", "Empty", null);
 
-                else result.success(createAddressMapList(addresses));
-            }
-            else result.error("failed", "Failed", null);
+          else result.success(createAddressMapList(addresses));
         }
+        else result.error("failed", "Failed", null);
+      }
     }.execute();
   }
 
   private void findAddressesFromCoordinates(final float latitude, final float longitude, final Result result) {
     final GeocoderPlugin plugin = this;
     new AsyncTask<Void, Void, List<Address>>() {
-        @Override
-        protected List<Address> doInBackground(Void... params) {
-            try {
-                plugin.assertPresent();
-                return geocoder.getFromLocation(latitude, longitude, 20);
-            } catch (IOException ex) {
-                return null;
-            } catch (NotAvailableException ex) {
-                return new ArrayList<>();
-            }
+      @Override
+      protected List<Address> doInBackground(Void... params) {
+        try {
+          plugin.assertPresent();
+          return geocoder.getFromLocation(latitude, longitude, 20);
+        } catch (IOException ex) {
+          return null;
+        } catch (NotAvailableException ex) {
+          return new ArrayList<>();
         }
+      }
 
-        @Override
-        protected void onPostExecute(List<Address> addresses) {
-            if (addresses != null) {
-                if (addresses.isEmpty())
-                    result.error("not_available", "Empty", null);
+      @Override
+      protected void onPostExecute(List<Address> addresses) {
+        if (addresses != null) {
+          if (addresses.isEmpty())
+            result.error("not_available", "Empty", null);
 
-                else result.success(createAddressMapList(addresses));
-            }
-            else result.error("failed", "Failed", null);
+          else result.success(createAddressMapList(addresses));
         }
+        else result.error("failed", "Failed", null);
+      }
     }.execute();
   }
 
@@ -230,4 +245,3 @@ public class GeocoderPlugin implements MethodCallHandler {
     return result;
   }
 }
-

@@ -5,14 +5,17 @@ author: Aloïs Deniel<alois.deniel@gmail.com>
 homepage: https://github.com/aloisdeniel/flutter_geocoder
 
 environment:
-    sdk: ">=2.0.0 <3.0.0"
+  sdk: ">=2.0.0 <3.0.0"
 
 dependencies:
-  meta: ^1.1.6
   flutter:
     sdk: flutter
 
 flutter:
   plugin:
-    androidPackage: com.aloisdeniel.geocoder
-    pluginClass: GeocoderPlugin
+    platforms:
+      android:
+        package: com.aloisdeniel.geocoder
+        pluginClass: GeocoderPlugin
+      ios:
+        pluginClass: GeocoderPlugin
