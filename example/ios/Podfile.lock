@@ -4,19 +4,19 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
-  - Flutter (from `/Users/alois/flutter/bin/cache/artifacts/engine/ios`)
-  - geocoder (from `/Users/alois/flutter_geocoder/ios`)
+  - Flutter (from `Flutter`)
+  - geocoder (from `.symlinks/plugins/geocoder/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
-    :path: "/Users/alois/flutter/bin/cache/artifacts/engine/ios"
+    :path: Flutter
   geocoder:
-    :path: "/Users/alois/flutter_geocoder/ios"
+    :path: ".symlinks/plugins/geocoder/ios"
 
 SPEC CHECKSUMS:
-  Flutter: 9d0fac939486c9aba2809b7982dfdbb47a7b0296
-  geocoder: 333b5c474623c8223f367b6ac4846b5f9ea72e85
+  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  geocoder: 6bb9cb74d39e014874e837ec598a6644b8e1807d
 
-PODFILE CHECKSUM: 351e02e34b831289961ec3558a535cbd2c4965d2
+PODFILE CHECKSUM: 8e679eca47255a8ca8067c4c67aab20e64cb974d
 
-COCOAPODS: 1.5.2
+COCOAPODS: 1.9.0
