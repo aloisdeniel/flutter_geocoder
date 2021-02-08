@@ -100,6 +100,7 @@ class GoogleGeocoding implements Geocoding {
       }
       else if(types.contains("administrative_area_level_1")) {
         result["adminArea"] = item["long_name"];
+        result["adminAreaCode"] = item["short_name"];
       }
       else if(types.contains("administrative_area_level_2")) {
         result["subAdminArea"] = item["long_name"];
