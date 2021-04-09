@@ -2,33 +2,68 @@ import 'package:meta/meta.dart';
 
 @immutable
 class Coordinates {
-
-  /// The geographic coordinate that specifies the north–south position of a point on the Earth's surface.
-  final double latitude;
-
-  /// The geographic coordinate that specifies the east-west position of a point on the Earth's surface.
-  final double longitude;
-
   Coordinates(this.latitude, this.longitude);
 
   /// Creates coordinates from a map containing its properties.
-  Coordinates.fromMap(Map map) :
-        this.latitude = map["latitude"],
-        this.longitude = map["longitude"];
+  Coordinates.fromMap(Map<double, double> map)
+      : this.latitude = map['latitude'],
+        this.longitude = map['longitude'];
+
+  /// The geographic coordinate that specifies
+  /// the north–south position of a point on the Earth's surface.
+  final double? latitude;
+
+  /// The geographic coordinate that specifies
+  /// the east-west position of a point on the Earth's surface.
+  final double? longitude;
 
   /// Creates a map from the coordinates properties.
-  Map toMap() => {
-    "latitude": this.latitude,
-    "longitude": this.longitude,
-  };
+  Map<String, double?> toMap() => <String, double?>{
+        'latitude': this.latitude,
+        'longitude': this.longitude,
+      };
 
-  String toString() => "{$latitude,$longitude}";
+  @override
+  String toString() => '{$latitude,$longitude}';
 }
 
 @immutable
 class Address {
+  Address({
+    required this.coordinates,
+    required this.addressLine,
+    required this.countryName,
+    required this.countryCode,
+    required this.featureName,
+    required this.postalCode,
+    required this.adminArea,
+    required this.subAdminArea,
+    required this.locality,
+    required this.subLocality,
+    required this.thoroughfare,
+    required this.subThoroughfare,
+  });
+
+  /// Creates an address from a map containing its properties.
+  Address.fromMap(Map<dynamic, dynamic> map)
+      : this.coordinates = Coordinates.fromMap(
+          map['coordinates']!,
+        ),
+        this.addressLine = map['addressLine']!,
+        this.countryName = map['countryName']!,
+        this.countryCode = map['countryCode']!,
+        this.featureName = map['featureName']!,
+        this.postalCode = map['postalCode']!,
+        this.locality = map['locality']!,
+        this.subLocality = map['subLocality']!,
+        this.adminArea = map['adminArea']!,
+        this.subAdminArea = map['subAdminArea']!,
+        this.thoroughfare = map['thoroughfare']!,
+        this.subThoroughfare = map['subThoroughfare']!;
+
+  
   /// The geographic coordinates.
-  final Coordinates coordinates;
+  final Coordinates? coordinates;
 
   /// The formatted address with all lines.
   final String addressLine;
@@ -63,36 +98,19 @@ class Address {
   /// The sub-thoroughfare name of the address
   final String subThoroughfare;
 
-  Address({this.coordinates, this.addressLine, this.countryName, this.countryCode, this.featureName, this.postalCode, this.adminArea, this.subAdminArea, this.locality, this.subLocality, this.thoroughfare, this.subThoroughfare});
-
-  /// Creates an address from a map containing its properties.
-  Address.fromMap(Map map) :
-        this.coordinates = new Coordinates.fromMap(map["coordinates"]),
-        this.addressLine = map["addressLine"],
-        this.countryName = map["countryName"],
-        this.countryCode = map["countryCode"],
-        this.featureName = map["featureName"],
-        this.postalCode = map["postalCode"],
-        this.locality = map["locality"],
-        this.subLocality = map["subLocality"],
-        this.adminArea = map["adminArea"],
-        this.subAdminArea = map["subAdminArea"],
-        this.thoroughfare = map["thoroughfare"],
-        this.subThoroughfare = map["subThoroughfare"];
-
   /// Creates a map from the address properties.
-  Map toMap() => {
-    "coordinates": this.coordinates.toMap(),
-    "addressLine": this.addressLine,
-    "countryName": this.countryName,
-    "countryCode": this.countryCode,
-    "featureName": this.featureName,
-    "postalCode": this.postalCode,
-    "locality": this.locality,
-    "subLocality": this.subLocality,
-    "adminArea": this.adminArea,
-    "subAdminArea": this.subAdminArea,
-    "thoroughfare": this.thoroughfare,
-    "subThoroughfare": this.subThoroughfare,
-  };
+  Map<String, dynamic> toMap() => <String, dynamic>{
+        'coordinates': this.coordinates!.toMap(),
+        'addressLine': this.addressLine,
+        'countryName': this.countryName,
+        'countryCode': this.countryCode,
+        'featureName': this.featureName,
+        'postalCode': this.postalCode,
+        'locality': this.locality,
+        'subLocality': this.subLocality,
+        'adminArea': this.adminArea,
+        'subAdminArea': this.subAdminArea,
+        'thoroughfare': this.thoroughfare,
+        'subThoroughfare': this.subThoroughfare,
+      };
 }
