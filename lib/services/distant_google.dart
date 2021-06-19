@@ -8,20 +8,24 @@ import 'package:geocoder/services/base.dart';
 
 /// Geocoding and reverse geocoding through requests to Google APIs.
 class GoogleGeocoding implements Geocoding {
-
   static const _host = 'https://maps.google.com/maps/api/geocode/json';
 
   final String apiKey;
   final String language;
+  final Map<String, Object> headers;
+  final bool preserveHeaderCase;
 
   final HttpClient _httpClient;
 
-  GoogleGeocoding(this.apiKey, { this.language }) :
-    _httpClient = HttpClient(),
-    assert(apiKey != null, "apiKey must not be null");
+  GoogleGeocoding(this.apiKey,
+      {this.language, this.headers, this.preserveHeaderCase = false})
+      : _httpClient = HttpClient(),
+        assert(apiKey != null, "apiKey must not be null");
 
-  Future<List<Address>> findAddressesFromCoordinates(Coordinates coordinates) async  {
-    final url = '$_host?key=$apiKey${language != null ? '&language='+language : ''}&latlng=${coordinates.latitude},${coordinates.longitude}';
+  Future<List<Address>> findAddressesFromCoordinates(
+      Coordinates coordinates) async {
+    final url =
+        '$_host?key=$apiKey${language != null ? '&language=' + language : ''}&latlng=${coordinates.latitude},${coordinates.longitude}';
     return _send(url);
   }
 
@@ -35,6 +39,11 @@ class GoogleGeocoding implements Geocoding {
     //print("Sending $url...");
     final uri = Uri.parse(url);
     final request = await this._httpClient.getUrl(uri);
+    if (headers != null) {
+      headers.forEach((key, value) {
+        request.headers.add(key, value, preserveHeaderCase: preserveHeaderCase);
+      });
+    }
     final response = await request.close();
     final responseBody = await utf8.decoder.bind(response).join();
     //print("Received $responseBody...");
