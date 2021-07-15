@@ -5,26 +5,27 @@ import 'package:geocoder/geocoder.dart';
 import 'package:geocoder/services/base.dart';
 import 'widgets.dart';
 
-void main() => runApp(new MyApp());
+void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
   @override
-  _MyAppState createState() => new _MyAppState();
+  _MyAppState createState() => _MyAppState();
 }
 
 class AppState extends InheritedWidget {
   const AppState({
-    Key key,
-    this.mode,
-    Widget child,
-  }) : assert(mode != null),
-        assert(child != null),
-        super(key: key, child: child);
+    Key? key,
+    required this.mode,
+    required Widget child,
+  }) : super(
+          key: key,
+          child: child,
+        );
 
   final Geocoding mode;
 
   static AppState of(BuildContext context) {
-    return context.inheritFromWidgetOfExactType(AppState);
+    return context.dependOnInheritedWidgetOfExactType<AppState>()!;
   }
 
   @override
@@ -32,40 +33,35 @@ class AppState extends InheritedWidget {
 }
 
 class GeocodeView extends StatefulWidget {
-
   GeocodeView();
 
   @override
-  _GeocodeViewState createState() => new _GeocodeViewState();
+  _GeocodeViewState createState() => _GeocodeViewState();
 }
 
 class _GeocodeViewState extends State<GeocodeView> {
-
   _GeocodeViewState();
 
-  final TextEditingController _controller = new TextEditingController();
+  final TextEditingController _controller = TextEditingController();
 
   List<Address> results = [];
 
   bool isLoading = false;
 
   Future search() async {
-
     this.setState(() {
       this.isLoading = true;
     });
 
-    try{
+    try {
       var geocoding = AppState.of(context).mode;
       var results = await geocoding.findAddressesFromQuery(_controller.text);
       this.setState(() {
         this.results = results;
       });
-    }
-    catch(e) {
+    } catch (e) {
       print("Error occured: $e");
-    }
-    finally {
+    } finally {
       this.setState(() {
         this.isLoading = false;
       });
@@ -74,41 +70,50 @@ class _GeocodeViewState extends State<GeocodeView> {
 
   @override
   Widget build(BuildContext context) {
-    return new Column(
-        children: <Widget>[
-          new Card(
-            child: new Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: new Row(
-                children: <Widget>[
-                  new Expanded(
-                    child: new TextField(
-                      controller: _controller,
-                      decoration: new InputDecoration(hintText: "Enter an address"),
+    return Column(
+      children: <Widget>[
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    decoration: InputDecoration(
+                      hintText: "Enter an address",
                     ),
                   ),
-                  new IconButton(icon: new Icon(Icons.search), onPressed: () => search())
-                ],
-              ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.search),
+                  onPressed: () => search(),
+                )
+              ],
             ),
           ),
-          new Expanded(child: new AddressListView(this.isLoading, this.results)),
-        ]);
+        ),
+        Expanded(
+          child: AddressListView(
+            this.isLoading,
+            this.results,
+          ),
+        ),
+      ],
+    );
   }
 }
 
 class ReverseGeocodeView extends StatefulWidget {
-
   ReverseGeocodeView();
 
   @override
-  _ReverseGeocodeViewState createState() => new _ReverseGeocodeViewState();
+  _ReverseGeocodeViewState createState() => _ReverseGeocodeViewState();
 }
 
 class _ReverseGeocodeViewState extends State<ReverseGeocodeView> {
-
-  final TextEditingController _controllerLongitude = new TextEditingController();
-  final TextEditingController _controllerLatitude = new TextEditingController();
+  final TextEditingController _controllerLongitude = TextEditingController();
+  final TextEditingController _controllerLatitude = TextEditingController();
 
   _ReverseGeocodeViewState();
 
@@ -117,25 +122,22 @@ class _ReverseGeocodeViewState extends State<ReverseGeocodeView> {
   bool isLoading = false;
 
   Future search() async {
-
-
     this.setState(() {
       this.isLoading = true;
     });
 
-    try{
+    try {
       var geocoding = AppState.of(context).mode;
       var longitude = double.parse(_controllerLongitude.text);
       var latitude = double.parse(_controllerLatitude.text);
-      var results = await geocoding.findAddressesFromCoordinates(new Coordinates(latitude, longitude));
+      var results = await geocoding
+          .findAddressesFromCoordinates(Coordinates(latitude, longitude));
       this.setState(() {
         this.results = results;
       });
-    }
-    catch(e) {
+    } catch (e) {
       print("Error occured: $e");
-    }
-    finally {
+    } finally {
       this.setState(() {
         this.isLoading = false;
       });
@@ -144,44 +146,54 @@ class _ReverseGeocodeViewState extends State<ReverseGeocodeView> {
 
   @override
   Widget build(BuildContext context) {
-    return new Column(
-        children: <Widget>[
-          new Card(
-            child: new Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: new Row(
-                children: <Widget>[
-                  new Expanded(
-                    child: new Column(
-                      children: <Widget>[
-                        new TextField(
-                          controller: _controllerLatitude,
-                          decoration: new InputDecoration(hintText: "Latitude"),
-                        ),
-                        new TextField(
-                          controller: _controllerLongitude,
-                          decoration: new InputDecoration(hintText: "Longitude"),
-                        ),
-                      ],
+    return Column(children: <Widget>[
+      Card(
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                child: Column(
+                  children: <Widget>[
+                    TextField(
+                      controller: _controllerLatitude,
+                      decoration: InputDecoration(
+                        hintText: "Latitude",
+                      ),
                     ),
-                  ),
-                  new IconButton(icon: new Icon(Icons.search), onPressed: () => search())
-                ],
+                    TextField(
+                      controller: _controllerLongitude,
+                      decoration: InputDecoration(
+                        hintText: "Longitude",
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
+              IconButton(
+                icon: Icon(Icons.search),
+                onPressed: () => search(),
+              )
+            ],
           ),
-          new Expanded(child: new AddressListView(this.isLoading, this.results)),
-        ]);
+        ),
+      ),
+      Expanded(
+        child: AddressListView(
+          this.isLoading,
+          this.results,
+        ),
+      ),
+    ]);
   }
 }
 
 class _MyAppState extends State<MyApp> {
-
   Geocoding geocoding = Geocoder.local;
 
   final Map<String, Geocoding> modes = {
-    "Local" : Geocoder.local,
-    "Google (distant)" : Geocoder.google("<API-KEY>"),
+    "Local": Geocoder.local,
+    "Google (distant)": Geocoder.google("<API-KEY>"),
   };
 
   void _changeMode(Geocoding mode) {
@@ -192,46 +204,48 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return new AppState(
+    return AppState(
       mode: this.geocoding,
-      child: new MaterialApp(
-        home: new DefaultTabController(
+      child: MaterialApp(
+        home: DefaultTabController(
           length: 2,
-          child: new Scaffold(
-            appBar: new AppBar(
-              title: new Text('Geocoder'),
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text('Geocoder'),
               actions: <Widget>[
-                new PopupMenuButton<Geocoding>( // overflow menu
+                PopupMenuButton<Geocoding>(
+                  // overflow menu
                   onSelected: _changeMode,
                   itemBuilder: (BuildContext context) {
                     return modes.keys.map((String mode) {
-                      return new CheckedPopupMenuItem<Geocoding>(
+                      return CheckedPopupMenuItem<Geocoding>(
                         checked: modes[mode] == this.geocoding,
                         value: modes[mode],
-                        child: new Text(mode),
+                        child: Text(mode),
                       );
                     }).toList();
                   },
                 ),
               ],
-              bottom: new TabBar(
-                tabs:  [
-                   new Tab(
+              bottom: TabBar(
+                tabs: [
+                  Tab(
                     text: "Query",
-                    icon: new Icon(Icons.search),
+                    icon: Icon(Icons.search),
                   ),
-                   new Tab(
-                     text: "Coordinates",
-                     icon: new Icon(Icons.pin_drop),
-                   ),
+                  Tab(
+                    text: "Coordinates",
+                    icon: Icon(Icons.pin_drop),
+                  ),
                 ],
               ),
             ),
-            body: new TabBarView(
-                children: <Widget>[
-                  new GeocodeView(),
-                  new ReverseGeocodeView(),
-                ]),
+            body: TabBarView(
+              children: <Widget>[
+                GeocodeView(),
+                ReverseGeocodeView(),
+              ],
+            ),
           ),
         ),
       ),
