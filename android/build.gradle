@@ -1,12 +1,10 @@
 group 'com.aloisdeniel.geocoder'
-version '1.0-SNAPSHOT'
+version '1.0'
 
 buildscript {
     repositories {
+        google()
         jcenter()
-        maven {
-            url "https://maven.google.com"
-        }
     }
 
     dependencies {
@@ -16,24 +14,17 @@ buildscript {
 
 rootProject.allprojects {
     repositories {
+        google()
         jcenter()
-        maven {
-            url "https://maven.google.com"
-        }
     }
 }
 
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
-    //buildToolsVersion '28.0.3'
+    compileSdkVersion 30
 
     defaultConfig {
         minSdkVersion 16
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
-    lintOptions {
-        disable 'InvalidPackage'
     }
 }
