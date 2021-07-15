@@ -47,6 +47,9 @@ class Address {
   /// The administrative area name of the address
   final String? adminArea;
 
+  /// The administrative area code of the address
+  final String? adminAreaCode;
+
   /// The sub-administrative area name of the address
   final String? subAdminArea;
 
@@ -70,6 +73,7 @@ class Address {
     this.featureName,
     this.postalCode,
     this.adminArea,
+    this.adminAreaCode,
     this.subAdminArea,
     this.locality,
     this.subLocality,
@@ -88,6 +92,7 @@ class Address {
         this.locality = map["locality"],
         this.subLocality = map["subLocality"],
         this.adminArea = map["adminArea"],
+        this.adminAreaCode = map["adminAreaCode"],
         this.subAdminArea = map["subAdminArea"],
         this.thoroughfare = map["thoroughfare"],
         this.subThoroughfare = map["subThoroughfare"];
@@ -103,6 +108,7 @@ class Address {
         "locality": this.locality,
         "subLocality": this.subLocality,
         "adminArea": this.adminArea,
+        "adminAreaCode": this.adminAreaCode,
         "subAdminArea": this.subAdminArea,
         "thoroughfare": this.thoroughfare,
         "subThoroughfare": this.subThoroughfare,
