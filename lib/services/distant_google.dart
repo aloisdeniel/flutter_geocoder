@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:core';
-import 'dart:io';
 
 import 'package:geocoder/model.dart';
 import 'package:geocoder/services/base.dart';
+import 'package:http/http.dart' as http;
 
 /// Geocoding and reverse geocoding through requests to Google APIs.
 class GoogleGeocoding implements Geocoding {
@@ -12,17 +12,15 @@ class GoogleGeocoding implements Geocoding {
 
   final String apiKey;
   final String? language;
-  final Map<String, Object>? headers;
+  final Map<String, String>? headers;
   final bool preserveHeaderCase;
-
-  final HttpClient _httpClient;
 
   GoogleGeocoding(
     this.apiKey, {
     this.language,
     this.headers,
     this.preserveHeaderCase = false,
-  }) : _httpClient = HttpClient();
+  });
 
   Future<List<Address>> findAddressesFromCoordinates(
       Coordinates coordinates) async {
@@ -40,19 +38,11 @@ class GoogleGeocoding implements Geocoding {
   Future<List<Address>?> _send(String url) async {
     //print("Sending $url...");
     final uri = Uri.parse(url);
-    final request = await this._httpClient.getUrl(uri);
-    if (headers != null) {
-      headers!.forEach((key, value) {
-        request.headers.add(key, value, preserveHeaderCase: preserveHeaderCase);
-      });
-    }
-    final response = await request.close();
-    final responseBody = await utf8.decoder.bind(response).join();
-    //print("Received $responseBody...");
-    var data = jsonDecode(responseBody);
+    final response = await http.get(uri, headers: headers);
+
+    var data = jsonDecode(response.body);
 
     var results = data["results"];
-
     if (results == null) return null;
 
     return results

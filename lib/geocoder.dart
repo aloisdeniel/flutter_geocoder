@@ -9,7 +9,7 @@ class Geocoder {
   static Geocoding google(
     String apiKey, {
     String? language,
-    Map<String, Object>? headers,
+    Map<String, String>? headers,
     bool preserveHeaderCase = false,
   }) =>
       GoogleGeocoding(apiKey,
