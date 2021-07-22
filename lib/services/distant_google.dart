@@ -13,13 +13,11 @@ class GoogleGeocoding implements Geocoding {
   final String apiKey;
   final String? language;
   final Map<String, String>? headers;
-  final bool preserveHeaderCase;
 
   GoogleGeocoding(
     this.apiKey, {
     this.language,
     this.headers,
-    this.preserveHeaderCase = false,
   });
 
   Future<List<Address>> findAddressesFromCoordinates(

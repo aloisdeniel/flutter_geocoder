@@ -6,14 +6,7 @@ export 'model.dart';
 
 class Geocoder {
   static final Geocoding local = LocalGeocoding();
-  static Geocoding google(
-    String apiKey, {
-    String? language,
-    Map<String, String>? headers,
-    bool preserveHeaderCase = false,
-  }) =>
-      GoogleGeocoding(apiKey,
-          language: language,
-          headers: headers,
-          preserveHeaderCase: preserveHeaderCase);
+  static Geocoding google(String apiKey,
+          {String? language, Map<String, String>? headers}) =>
+      GoogleGeocoding(apiKey, language: language, headers: headers);
 }
