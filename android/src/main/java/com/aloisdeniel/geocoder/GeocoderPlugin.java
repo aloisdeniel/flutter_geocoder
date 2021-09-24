@@ -60,7 +60,7 @@ public class GeocoderPlugin implements FlutterPlugin, MethodChannel.MethodCallHa
     private void onAttachedToEngine(Context applicationContext, BinaryMessenger messenger) {
         this.context = applicationContext;
         this.geocoder = new Geocoder(context);
-        methodChannel = new MethodChannel(messenger, "flutter_share");
+        methodChannel = new MethodChannel(messenger, "github.com/aloisdeniel/geocoder");
         methodChannel.setMethodCallHandler(this);
     }
 
