@@ -1,11 +1,14 @@
 package com.aloisdeniel.geocoder;
 
+import androidx.annotation.NonNull;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Collections;
 import java.util.HashMap;
 import java.io.IOException;
-import java.lang.Exception;
+import android.app.Activity;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
@@ -13,6 +16,7 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
@@ -20,30 +24,24 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /**
- * NotAvailableException
- */
-class NotAvailableException extends Exception {
-  NotAvailableException() {}
-}
-
-/**
  * GeocoderPlugin
  */
-public class GeocoderPlugin implements MethodCallHandler {
+public class GeocoderPlugin implements FlutterPlugin, MethodCallHandler {
 
   private Geocoder geocoder;
+  private MethodChannel channel;
 
-  public GeocoderPlugin(Context context) {
-
-    this.geocoder = new Geocoder(context);
+  @Override
+  public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
+    channel = new MethodChannel(binding.getBinaryMessenger(), "github.com/aloisdeniel/geocoder");
+    channel.setMethodCallHandler(this);
+    geocoder = new Geocoder(binding.getApplicationContext());
   }
 
-  /**
-   * Plugin registration.
-   */
-  public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "github.com/aloisdeniel/geocoder");
-    channel.setMethodCallHandler(new GeocoderPlugin(registrar.context()));
+  @Override
+  public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+    channel.setMethodCallHandler(null);
+
   }
 
   // MethodChannel.Result wrapper that responds on the platform thread.
@@ -58,36 +56,18 @@ public class GeocoderPlugin implements MethodCallHandler {
 
     @Override
     public void success(final Object result) {
-      handler.post(
-          new Runnable() {
-            @Override
-            public void run() {
-              methodResult.success(result);
-            }
-          });
+      handler.post(() -> methodResult.success(result));
     }
 
     @Override
     public void error(
         final String errorCode, final String errorMessage, final Object errorDetails) {
-      handler.post(
-          new Runnable() {
-            @Override
-            public void run() {
-              methodResult.error(errorCode, errorMessage, errorDetails);
-            }
-          });
+      handler.post(() -> methodResult.error(errorCode, errorMessage, errorDetails));
     }
 
     @Override
     public void notImplemented() {
-      handler.post(
-          new Runnable() {
-            @Override
-            public void run() {
-              methodResult.notImplemented();
-            }
-          });
+      methodResult.notImplemented();
     }
   }
 
@@ -98,11 +78,10 @@ public class GeocoderPlugin implements MethodCallHandler {
     if (call.method.equals("findAddressesFromQuery")) {
       String address = (String) call.argument("address");
       findAddressesFromQuery(address, result);
-    }
-    else if (call.method.equals("findAddressesFromCoordinates")) {
+    } else if (call.method.equals("findAddressesFromCoordinates")) {
       float latitude = ((Number) call.argument("latitude")).floatValue();
       float longitude = ((Number) call.argument("longitude")).floatValue();
-      findAddressesFromCoordinates(latitude,longitude, result);
+      findAddressesFromCoordinates(latitude, longitude, result);
     } else {
       result.notImplemented();
     }
@@ -115,68 +94,68 @@ public class GeocoderPlugin implements MethodCallHandler {
   }
 
   private void findAddressesFromQuery(final String address, final Result result) {
-
     final GeocoderPlugin plugin = this;
     new AsyncTask<Void, Void, List<Address>>() {
-        @Override
-        protected List<Address> doInBackground(Void... params) {
-            try {
-                plugin.assertPresent();
-                return geocoder.getFromLocationName(address, 20);
-            } catch (IOException ex) {
-                return null;
-            } catch (NotAvailableException ex) {
-                return new ArrayList<>();
-            }
+      @Override
+      protected List<Address> doInBackground(Void... params) {
+        try {
+          plugin.assertPresent();
+          return geocoder.getFromLocationName(address, 20);
+        } catch (IOException ex) {
+          return null;
+        } catch (NotAvailableException ex) {
+          return new ArrayList<>();
         }
+      }
 
-        @Override
-        protected void onPostExecute(List<Address> addresses) {
-            if (addresses != null) {
-                if (addresses.isEmpty())
-                    result.error("not_available", "Empty", null);
+      @Override
+      protected void onPostExecute(List<Address> addresses) {
+        if (addresses != null) {
+          if (addresses.isEmpty())
+            result.error("not_available", "Empty", null);
 
-                else result.success(createAddressMapList(addresses));
-            }
-            else result.error("failed", "Failed", null);
-        }
+          else
+            result.success(createAddressMapList(addresses));
+        } else
+          result.error("failed", "Failed", null);
+      }
     }.execute();
   }
 
   private void findAddressesFromCoordinates(final float latitude, final float longitude, final Result result) {
     final GeocoderPlugin plugin = this;
     new AsyncTask<Void, Void, List<Address>>() {
-        @Override
-        protected List<Address> doInBackground(Void... params) {
-            try {
-                plugin.assertPresent();
-                return geocoder.getFromLocation(latitude, longitude, 20);
-            } catch (IOException ex) {
-                return null;
-            } catch (NotAvailableException ex) {
-                return new ArrayList<>();
-            }
+      @Override
+      protected List<Address> doInBackground(Void... params) {
+        try {
+          plugin.assertPresent();
+          return geocoder.getFromLocation(latitude, longitude, 20);
+        } catch (IOException ex) {
+          return null;
+        } catch (NotAvailableException ex) {
+          return new ArrayList<>();
         }
+      }
 
-        @Override
-        protected void onPostExecute(List<Address> addresses) {
-            if (addresses != null) {
-                if (addresses.isEmpty())
-                    result.error("not_available", "Empty", null);
-
-                else result.success(createAddressMapList(addresses));
-            }
-            else result.error("failed", "Failed", null);
-        }
+      @Override
+      protected void onPostExecute(List<Address> addresses) {
+        if (addresses != null) {
+          if (addresses.isEmpty())
+            result.error("not_available", "Empty", null);
+          else
+            result.success(createAddressMapList(addresses));
+        } else
+          result.error("failed", "Failed", null);
+      }
     }.execute();
   }
 
   private Map<String, Object> createCoordinatesMap(Address address) {
 
-    if(address == null)
-      return null;
+    if (address == null)
+      return Collections.emptyMap();
 
-    Map<String, Object> result = new HashMap<String, Object>();
+    Map<String, Object> result = new HashMap<>();
 
     result.put("latitude", address.getLatitude());
     result.put("longitude", address.getLongitude());
@@ -186,8 +165,8 @@ public class GeocoderPlugin implements MethodCallHandler {
 
   private Map<String, Object> createAddressMap(Address address) {
 
-    if(address == null)
-      return null;
+    if (address == null)
+      return Collections.emptyMap();
 
     // Creating formatted address
     StringBuilder sb = new StringBuilder();
@@ -198,7 +177,7 @@ public class GeocoderPlugin implements MethodCallHandler {
       sb.append(address.getAddressLine(i));
     }
 
-    Map<String, Object> result = new HashMap<String, Object>();
+    Map<String, Object> result = new HashMap<>();
 
     result.put("coordinates", createCoordinatesMap(address));
     result.put("featureName", address.getFeatureName());
@@ -218,10 +197,10 @@ public class GeocoderPlugin implements MethodCallHandler {
 
   private List<Map<String, Object>> createAddressMapList(List<Address> addresses) {
 
-    if(addresses == null)
-      return new ArrayList<Map<String, Object>>();
+    if (addresses == null)
+      return new ArrayList<>();
 
-    List<Map<String, Object>> result = new ArrayList<Map<String, Object>>(addresses.size());
+    List<Map<String, Object>> result = new ArrayList<>(addresses.size());
 
     for (Address address : addresses) {
       result.add(createAddressMap(address));
@@ -231,3 +210,10 @@ public class GeocoderPlugin implements MethodCallHandler {
   }
 }
 
+/**
+ * NotAvailableException
+ */
+class NotAvailableException extends Exception {
+  NotAvailableException() {
+  }
+}
